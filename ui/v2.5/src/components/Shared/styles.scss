@@ -162,6 +162,10 @@ button.collapse-button.btn-primary:not(:disabled):not(.disabled):active {
 }
 
 .grid-card {
+  .card-section {
+    height: 100%;
+  }
+
   a .card-section-title {
     color: $text-color;
     text-decoration: none;

@@ -160,6 +160,18 @@ textarea.scene-description {
   }
 }
 
+.card-section-teaser {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  align-items: center;
+
+  &-studio {
+    max-width: 65%;
+    text-transform: uppercase;
+  }
+}
+
 .extra-scene-info {
   display: none;
 }
@@ -212,8 +224,15 @@ textarea.scene-description {
     }
   }
 
-  &__details {
-    margin-bottom: 1rem;
+  &-title {
+    margin-top: 0.15rem;
+  }
+
+  &__description-popup {
+    padding: 0.5rem;
+    max-width: 380px;
+    line-height: 1.4rem;
+    text-align: left;
   }
 
   &:hover,

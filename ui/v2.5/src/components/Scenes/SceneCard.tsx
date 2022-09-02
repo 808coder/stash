@@ -16,12 +16,14 @@ import { ConfigurationContext } from "src/hooks/Config";
 import { PerformerPopoverButton } from "../Shared/PerformerPopoverButton";
 import { GridCard } from "../Shared/GridCard";
 import { RatingBanner } from "../Shared/RatingBanner";
+import { PerformerEnumeration } from "../Shared/PerformerEnumeration";
 import { FormattedNumber } from "react-intl";
 import {
   faBox,
   faCopy,
   faFilm,
   faImages,
+  faInfoCircle,
   faMapMarkerAlt,
   faTag,
 } from "@fortawesome/free-solid-svg-icons";
@@ -92,13 +94,6 @@ export const SceneCard: React.FC<ISceneCardProps> = (
 ) => {
   const { configuration } = React.useContext(ConfigurationContext);
 
-  // studio image is missing if it uses the default
-  const missingStudioImage = props.scene.studio?.image_path?.endsWith(
-    "?default=true"
-  );
-  const showStudioAsText =
-    missingStudioImage || (configuration?.interface.showStudioAsText ?? false);
-
   function maybeRenderSceneSpecsOverlay() {
     let sizeObj = null;
     if (props.scene.file.size) {
@@ -151,17 +146,51 @@ export const SceneCard: React.FC<ISceneCardProps> = (
     return (
       <div className="scene-studio-overlay">
         <Link to={`/studios/${props.scene.studio.id}`}>
-          {showStudioAsText ? (
-            props.scene.studio.name
-          ) : (
-            <img
-              className="image-thumbnail"
-              alt={props.scene.studio.name}
-              src={props.scene.studio.image_path ?? ""}
-            />
-          )}
+          {props.scene.studio.name}
         </Link>
       </div>
+    );
+  }
+
+  function maybeRenderSceneTeaser() {
+    if (!props.scene.studio) return;
+
+    return (
+      <div className="card-section-teaser">
+        <div className="card-section-teaser-studio">
+          <Link to={`/studios/${props.scene.studio.id}`}>
+            <TruncatedText text={props.scene.studio.name} />
+          </Link>
+        </div>
+        <span className="scene-studio-teaser-date">{props.scene.date}</span>
+      </div>
+    );
+  }
+
+  function maybeRenderPerformerEnumeration() {
+    if (props.scene.performers.length <= 0) return;
+
+    return (
+      <PerformerEnumeration
+        performers={(props.scene.performers as unknown) as GQL.Performer[]}
+        onlyFemale={true}
+        displayThumbnailOnHover={true}
+      />
+    );
+  }
+
+  function maybeRenderSceneDescriptionPopoverButton() {
+    if (!props.scene.details) return;
+
+    const desciptionElement = (
+      <div className="scene-card__description-popup">{props.scene.details}</div>
+    );
+    return (
+      <HoverPopover content={desciptionElement} placement="bottom">
+        <Button className="minimal">
+          <Icon icon={faInfoCircle} />
+        </Button>
+      </HoverPopover>
     );
   }
 
@@ -329,6 +358,7 @@ export const SceneCard: React.FC<ISceneCardProps> = (
         <>
           <hr />
           <ButtonGroup className="card-popovers">
+            {maybeRenderSceneDescriptionPopoverButton()}
             {maybeRenderTagPopoverButton()}
             {maybeRenderPerformerPopoverButton()}
             {maybeRenderMoviePopoverButton()}
@@ -369,11 +399,13 @@ export const SceneCard: React.FC<ISceneCardProps> = (
     <GridCard
       className={`scene-card ${zoomIndex()}`}
       url={sceneLink}
+      teaser={maybeRenderSceneTeaser()}
       title={
         props.scene.title
           ? props.scene.title
           : TextUtils.fileNameFromPath(props.scene.path)
       }
+      titleClassName="scene-card-title"
       linkClassName="scene-card-link"
       thumbnailSectionClassName="video-section"
       interactiveHeatmap={
@@ -394,16 +426,18 @@ export const SceneCard: React.FC<ISceneCardProps> = (
           {maybeRenderInteractiveSpeedOverlay()}
         </>
       }
-      overlays={maybeRenderSceneStudioOverlay()}
+      // overlays={maybeRenderSceneStudioOverlay()}
       details={
         <div className="scene-card__details">
-          <span className="scene-card__date">{props.scene.date}</span>
+          {maybeRenderPerformerEnumeration()}
+          {/* <span className="scene-card__date">{props.scene.date}</span> */}
           <span className="file-path extra-scene-info">{props.scene.path}</span>
-          <TruncatedText
+
+          {/* <TruncatedText
             className="scene-card__description"
             text={props.scene.details}
             lineCount={3}
-          />
+          /> */}
         </div>
       }
       popovers={maybeRenderPopoverButtonGroup()}

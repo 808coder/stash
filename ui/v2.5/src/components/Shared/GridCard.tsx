@@ -11,7 +11,9 @@ interface ICardProps {
   url: string;
   pretitleIcon?: JSX.Element;
   title: string;
+  titleClassName?: string;
   image: JSX.Element;
+  teaser?: JSX.Element;
   details?: JSX.Element;
   overlays?: JSX.Element;
   popovers?: JSX.Element;
@@ -99,7 +101,6 @@ export const GridCard: React.FC<ICardProps> = (props: ICardProps) => {
       draggable={props.onSelectedChanged && props.selecting}
     >
       {maybeRenderCheckbox()}
-
       <div className={cx(props.thumbnailSectionClassName, "thumbnail-section")}>
         <Link
           to={props.url}
@@ -112,10 +113,15 @@ export const GridCard: React.FC<ICardProps> = (props: ICardProps) => {
       </div>
       {maybeRenderInteractiveHeatmap()}
       <div className="card-section">
+        {props.teaser}
         <Link to={props.url} onClick={handleImageClick}>
           <h5 className="card-section-title flex-aligned">
             {props.pretitleIcon}
-            <TruncatedText text={props.title} lineCount={2} />
+            <TruncatedText
+              className={props.titleClassName}
+              text={props.title}
+              lineCount={2}
+            />
           </h5>
         </Link>
         {props.details}
